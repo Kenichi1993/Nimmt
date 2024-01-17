@@ -1,6 +1,6 @@
 #include <bits/stdc++.h>
 using namespace std;
-#define rep(i, n) for (int i = 0; i < (int)(n); i++)
+#define rep(i,n) for (int i=0; i<(int)(n);i++)
 #include "utils.cpp"
 #include "players/Player1.cpp"
 #include "players/Player2.cpp"
@@ -27,11 +27,11 @@ std::vector<PLAYER*> players = {&p1, &p2, &p3};
 void init(){
 
   //グローバル変数の初期化
-  turn=0;
-  Field=vector<vector<int>>(L, vector<int>()); 
-  Hands=vector<vector<int>>(N,vector<int>());
-  Scores=vector<int>(N,0);
-  Cards=vector<int>(104);
+  turn = 0;
+  Field = vector<vector<int>>(L, vector<int>()); 
+  Hands = vector<vector<int>>(N,vector<int>());
+  Scores = vector<int>(N,0);
+  Cards = vector<int>(104);
 
   //1-104のカードを作成
   iota(Cards.begin(), Cards.end(), 1);
@@ -42,7 +42,7 @@ void init(){
   shuffle(Cards.begin(), Cards.end(), get_rand_mt ); 
 
   //レーンにL枚配置&手札10枚ずつ配る
-  for(int i=0; i<L; i++){
+  for(int i=0;i<L;i++){
     Field.at(i).push_back(Cards.back());
     Cards.pop_back();
   }
@@ -64,12 +64,12 @@ void init(){
 
 //出したカードがどのレーンに置かれるか決める関数。どこにも置けない場合は-1を出力
 int lane(int x){
-  int ret=-1;
-  int tmp=0;
-  for (int i=0; i<L; i++){
+  int ret = -1;
+  int tmp = 0;
+  for (int i=0;i<L;i++){
     if(Field.at(i).back()<x&&tmp<Field.at(i).back()) {
-      ret=i;
-      tmp=Field.at(i).back();
+      ret = i;
+      tmp = Field.at(i).back();
     }
   }
   return ret;
@@ -78,15 +78,15 @@ int lane(int x){
 //出されたカードの処理と得点計算。引数はプレイヤーが選んだ数字のvector(=choice)
 void shori(vector<int> X){
   vector<pair<int,int>> Sort; //pair(出した数字, 出したプレイヤー)のvector
-  for (int i=0; i<N; i++){
+  for (int i=0;i<N;i++){
     Sort.push_back(make_pair(X.at(i),i));
   }
   sort(Sort.begin(),Sort.end());
 
-  for (int i=0; i<N; i++){
-    int number=Sort.at(i).first; //出したカードの数字
-    int p=Sort.at(i).second; //出したプレイヤー
-    int l=lane(number); //置かれるレーン番号
+  for (int i=0;i<N;i++){
+    int number = Sort.at(i).first; //出したカードの数字
+    int p = Sort.at(i).second; //出したプレイヤー
+    int l = lane(number); //置かれるレーン番号
 
     //どこにも置けない場合、いずれかのレーンを回収後、出したカードを置く
     if(l==-1){
