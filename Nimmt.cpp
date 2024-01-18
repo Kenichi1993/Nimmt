@@ -8,7 +8,6 @@ using namespace std;
 
 const int N=3; //プレイ人数
 const int L=4; //レーンの数
-int turn; //ターン数
 vector<vector<int>> Field; //場の状態
 vector<vector<int>> Hands; //手札の状態
 vector<int> Scores; //各プレイヤーの得点
@@ -25,9 +24,7 @@ std::vector<PLAYER*> players = {&p1, &p2, &p3};
 
 //初期化
 void init(){
-
   //グローバル変数の初期化
-  turn = 0;
   Field = vector<vector<int>>(L, vector<int>()); 
   Hands = vector<vector<int>>(N,vector<int>());
   Scores = vector<int>(N,0);
@@ -63,7 +60,7 @@ void init(){
 }
 
 //出したカードがどのレーンに置かれるか決める関数。どこにも置けない場合は-1を出力
-int lane(int x){
+int select_lane(int x){
   int ret = -1;
   int tmp = 0;
   for (int i=0;i<L;i++){
@@ -84,30 +81,26 @@ void shori(vector<int> X){
   sort(Sort.begin(),Sort.end());
 
   for (int i=0;i<N;i++){
-    int number = Sort.at(i).first; //出したカードの数字
-    int p = Sort.at(i).second; //出したプレイヤー
-    int l = lane(number); //置かれるレーン番号
+    pair<int,int> selected_player = Sort.at(i);
+    int selected_speaker_number = selected_player.first; //出したカードの数字
+    int selecte_speaker_id = selected_player.second; //出したプレイヤー
+    int selected_lane = select_lane(selected_speaker_number); //置かれるレーン番号
 
-    //どこにも置けない場合、いずれかのレーンを回収後、出したカードを置く
-    if(l==-1){
-      int sl; //selected lane
-      sl = players.at(p)->select_lane();
-      Scores.at(p)+=Field.at(sl).size(); //点数計算
-      Field.at(sl).clear();
-      Field.at(sl).push_back(number);
+    if(selected_lane==-1 || Field.at(selected_lane).size()==5){
+      // in case where player retrieve lanes
+      // when the selected lane is -1 which means player cant put cards and select line
+      if(selected_lane==-1){
+        selected_lane = players.at(selecte_speaker_id)->select_lane();
+      }
+      Scores.at(selecte_speaker_id)+=Field.at(selected_lane).size(); //点数計算
+      Field.at(selected_lane).clear();
     }
-    //レーンのカードの枚数が6枚になる場合、そのレーンを回収後、出したカードを置く
-    else if (Field.at(l).size()==5){
-      Scores.at(p)+=Field.at(l).size(); //点数計算
-      Field.at(l).clear();
-      Field.at(l).push_back(number);
-    }
-    //問題なくカードを置ける場合
-    else Field.at(l).push_back(number);
+    //put card on field
+    Field.at(selected_lane).push_back(selected_speaker_number);
   }
 }
 
-void play(){
+void play(int turn){
 
   vector<int> choice={}; //プレイヤーが出した数字を格納するvector
   //update players's members
@@ -115,7 +108,7 @@ void play(){
     player->turn = turn;
     player->field = Field;
     player->score = Scores;
-    choice.push_back(player->select_card()); //プレイヤー1が出す数字をchoiceに格納
+    choice.push_back(player->select_card()); //プレイヤーが出す数字をchoiceに格納
   }
 
   //choiceの表示
@@ -144,6 +137,7 @@ signed main(){
 
   for(int it=0;it<number_play_loop;it++){
 
+    int turn = 0; //ターン数
     //初期化
     init();
 
@@ -154,7 +148,7 @@ signed main(){
     //1ゲームを実行（全10ターン）
     for (int i=0;i<10;i++){
       turn++;
-      play();
+      play(turn);
     }
 
     print_Scores(N, Scores); //点数表示
