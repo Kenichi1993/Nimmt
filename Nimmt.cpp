@@ -129,7 +129,7 @@ void play(int turn){
 }
 
 
-signed main(){
+signed main(int argc, char* argv[]){
 
   int number_play_loop=10; //ゲームの繰り返し数
   vector<int> Scores_Sum(N,0); //累計の点数
